@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entity/User';
 import { dataSource } from './data-source';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,11 +14,6 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto : CreateUserDto):Promise<User | null>{
-    const queryRunner = dataSource.createQueryRunner()
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    var possibleError = null;
-    var possibleNewUser = null;
     try {
       const newUser = new User() 
       newUser.name = createUserDto.name
@@ -27,17 +23,12 @@ export class UsersService {
       newUser.joined= createUserDto.joined
       newUser.email =  createUserDto.email
       newUser.phoneNumber = createUserDto.phoneNumber
-      possibleNewUser = await queryRunner.manager.save(newUser)
-      await queryRunner.commitTransaction();
+      const savedUser = await this.usersRepository.save(newUser)
+      return savedUser
     } catch (error) {
-      possibleError = error
       console.log(error)
-      await queryRunner.rollbackTransaction();
-    } finally{
-      await queryRunner.release();
-      if (possibleError) return null
-      return possibleNewUser
-    }
+      return null
+    } 
   }
   async findAll(): Promise<User[]> {
     return await this.usersRepository.find();
@@ -47,7 +38,22 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ id });
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  async remove(id: number): Promise<boolean> {
+    try{
+      await this.usersRepository.delete(id);
+      return true
+    } catch(error){
+      console.log(error)
+      return false
+    }
+  }
+
+  async updateUser( updateUserDto : UpdateUserDto) : Promise<User>{
+    try {
+      const updatedUser = await this.usersRepository.save(updateUserDto)
+      return updatedUser
+    } catch (error) {
+      return error
+    }
   }
 }

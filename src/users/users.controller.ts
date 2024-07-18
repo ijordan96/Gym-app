@@ -2,6 +2,7 @@ import { Controller, Get, Post, Patch, Delete, Param, Inject, Body } from '@nest
 import { UsersService } from './users.service'
 import { User } from './entity/User'
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
 
 @Controller('user')
 export class UserController {
@@ -19,17 +20,18 @@ export class UserController {
     return user
   }
   @Post()
-  async createUser(@Body() createUserDto : CreateUserDto) : Promise<User | null>{
-    const user = await this.userService.createUser(createUserDto);
+  createUser(@Body() createUserDto : CreateUserDto) : Promise<User | null>{
+    const user = this.userService.createUser(createUserDto);
     return user
   }
-  @Patch(':id')
-  update(@Param('id') id: number) {
-    return 'This action updates an existing users';
+  @Patch()
+  update(@Body() updateUserDto: UpdateUserDto) : Promise<User | null> {
+    const updatedUser = this.userService.updateUser(updateUserDto)
+    return updatedUser;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return 'this deletes an existing user'
+  remove(@Param('id') id: number) : Promise<boolean>{
+    return this.userService.remove(id)
   }
 }
