@@ -2,8 +2,8 @@ export class CreateUserDto {
     name : string; 
     surname: string; 
     age : number; 
-    birthdate : string; 
+    birthdate : Date; 
     joined : string;
-     email : string; 
-     phoneNumber : string;
+    email : string; 
+    phoneNumber : string;
 }
