@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User } from './users/entity/User';
 import { controllers } from './auxiliary/controllers';
 import { services } from './auxiliary/services';
 import { modules } from './auxiliary/modules';
 import { Connection } from 'mongoose';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { Connection } from 'mongoose';
           return connection;
         },}
     )
-    ,...modules
+    ,...modules, AuthModule
   ],
   controllers: controllers,
   providers: services,
