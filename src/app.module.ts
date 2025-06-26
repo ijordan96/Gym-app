@@ -4,7 +4,6 @@ import { controllers } from './auxiliary/controllers';
 import { services } from './auxiliary/services';
 import { modules } from './auxiliary/modules';
 import { Connection } from 'mongoose';
-import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
           return connection;
         },}
     )
-    ,...modules, AuthModule
+    ,...modules, 
   ],
   controllers: controllers,
   providers: services,
