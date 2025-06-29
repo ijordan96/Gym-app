@@ -32,10 +32,10 @@ export class AdminsService {
     return await this.adminsModel.findOne({ email });
   }
 
-  async remove(id: string): Promise<boolean> {
+  async deleteAdmin(id: string): Promise<boolean> {
     try{
-      await this.adminsModel.findByIdAndDelete({id});
-      return true
+      const deletedAdmin = await this.adminsModel.findByIdAndDelete(id);
+      return !!deletedAdmin
     } catch(error){
       console.log(error)
       return false

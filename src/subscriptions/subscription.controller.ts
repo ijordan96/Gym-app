@@ -1,35 +1,45 @@
-import { Controller, Get, Post, Patch, Delete, Param, Inject, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Inject, Body, UseGuards, NotFoundException, Query } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service'
 import { CreateSubscriptionDto } from './dto/createSubsciption.dto';
 import { Subscription } from './schemas/subscription.schema';
 import { UpdateSubscriptionDto } from './dto/updateSubscription.dto';
+import { AuthGuard } from '../auth/auth.guard';
+
 
 @Controller('subscription')
 export class SubscriptionController {
   constructor(private readonly SubscriptionService:SubscriptionService) {}
+
+  @UseGuards(AuthGuard)
   @Get()
-  findAll(): Promise<Subscription[]> {
-    const users = this.SubscriptionService.findAll();
-    return users
+  async returnSubscriptions(@Query('id') id: string): Promise<Subscription[] | Subscription> {
+    if(id){
+      const subscription = this.SubscriptionService.findOne(id);
+      return subscription
+    }
+    const subscriptions = this.SubscriptionService.findAll();
+    return subscriptions
   }
-  @Get(':id')
-  findOne(@Param('id') id: number) : Promise<Subscription | null> {
-    const user = this.SubscriptionService.findOne(id);
-    return user
-  }
+  
+
+  @UseGuards(AuthGuard)
   @Post()
-  createSubscription(@Body() createSubscriptionDto : CreateSubscriptionDto) : Promise<Subscription | null>{
-    const user = this.SubscriptionService.createSubscription(createSubscriptionDto);
-    return user
-  }
-  @Patch()
-  update(@Body() updateSubscriptionDto: UpdateSubscriptionDto) : Promise<Subscription | null> {
-    const updatedUser = this.SubscriptionService.updateUser(updateSubscriptionDto)
-    return updatedUser;
+  async createSubscription(@Body() createSubscriptionDto : CreateSubscriptionDto) : Promise<Subscription | null>{
+    const subscription = await this.SubscriptionService.createSubscription(createSubscriptionDto);
+    return subscription
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: number) : Promise<boolean>{
-    return this.SubscriptionService.remove(id)
+  @UseGuards(AuthGuard)
+  @Patch()
+  async updateSubscription(@Body() updateSubscriptionDto: UpdateSubscriptionDto) : Promise<Subscription | null> {
+    const updatedSubcription = await this.SubscriptionService.updateSubscription(updateSubscriptionDto)
+    return updatedSubcription;
+  }
+
+  @UseGuards(AuthGuard)  
+  @Delete('')
+  async deleteSubscription(@Query('id') id: string) : Promise<void>{
+    const deletedSubscription = await this.SubscriptionService.deleteSubscription(id)
+    if(!deletedSubscription) throw new NotFoundException();
   }
 }

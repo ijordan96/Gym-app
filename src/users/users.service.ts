@@ -16,16 +16,6 @@ export class UsersService {
 
   async createUser(createUserDto : CreateUserDto):Promise<User | null>{
     try {
-      // const newUser = new User() 
-      // newUser.name = createUserDto.name
-      // newUser.surname = createUserDto.surname
-      // newUser.age = createUserDto.age
-      // newUser.birthdate = createUserDto.birthdate
-      // newUser.joined= createUserDto.joined
-      // newUser.email =  createUserDto.email
-      // newUser.phoneNumber = createUserDto.phoneNumber
-      // const savedUser = await this.usersModel.save(newUser)
-      // return savedUser
       const createdUser = new this.usersModel(createUserDto)
       createdUser.save()
       return createdUser
@@ -38,26 +28,26 @@ export class UsersService {
     return await this.usersModel.find();
   }
 
-  async findOne(id: number): Promise<User | null> {
-    return await this.usersModel.findById({ id });
+  async findOne(id: string): Promise<User | null> {
+    return await this.usersModel.findById(id);
   }
 
-  async remove(id: number): Promise<boolean> {
+  async remove(id: string): Promise<boolean> {
     try{
-      await this.usersModel.deleteOne({id});
-      return true
+      const deletedUser = await this.usersModel.findByIdAndDelete(id);
+      return !!deletedUser
     } catch(error){
       console.log(error)
       return false
     }
   }
 
-  // async updateUser( updateUserDto : UpdateUserDto) : Promise<User>{
-  //   try {
-  //     const updatedUser = await this.usersModel(updateUserDto)
-  //     return updatedUser
-  //   } catch (error) {
-  //     return error
-  //   }
-  // }
+  async updateUser( updateUserDto : UpdateUserDto) : Promise<User>{
+    try {
+      const updatedUser = await this.usersModel.findByIdAndUpdate(updateUserDto.id,updateUserDto)
+      return updatedUser
+    } catch (error) {
+      return error
+    }
+  }
 }

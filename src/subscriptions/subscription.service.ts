@@ -16,16 +16,6 @@ export class SubscriptionService {
 
   async createSubscription(createSubscriptionDto : CreateSubscriptionDto):Promise<Subscription | null>{
     try {
-      // const newUser = new User() 
-      // newUser.name = createUserDto.name
-      // newUser.surname = createUserDto.surname
-      // newUser.age = createUserDto.age
-      // newUser.birthdate = createUserDto.birthdate
-      // newUser.joined= createUserDto.joined
-      // newUser.email =  createUserDto.email
-      // newUser.phoneNumber = createUserDto.phoneNumber
-      // const savedUser = await this.usersModel.save(newUser)
-      // return savedUser
       const createdSubscription = new this.subscriptionsModel(createSubscriptionDto)
       createdSubscription.save()
       return createdSubscription
@@ -38,21 +28,21 @@ export class SubscriptionService {
     return await this.subscriptionsModel.find();
   }
 
-  async findOne(id: number): Promise<Subscription | null> {
-    return await this.subscriptionsModel.findById({ id });
+  async findOne(id: string): Promise<Subscription | null> {
+    return await this.subscriptionsModel.findById(id);
   }
 
-  async remove(id: number): Promise<boolean> {
+  async deleteSubscription(id: string): Promise<boolean> {
     try{
-      await this.subscriptionsModel.deleteOne({id});
-      return true
+      const deletedSubscription = await this.subscriptionsModel.findByIdAndDelete(id);
+      return !!deletedSubscription
     } catch(error){
       console.log(error)
       return false
     }
   }
 
-  async updateUser( updateSubscriptionDto : UpdateSubscriptionDto) : Promise<Subscription>{
+  async updateSubscription( updateSubscriptionDto : UpdateSubscriptionDto) : Promise<Subscription>{
     try {
       const subscritpion = await this.subscriptionsModel.findByIdAndUpdate(updateSubscriptionDto.id, updateSubscriptionDto, { new: true })
       return subscritpion
